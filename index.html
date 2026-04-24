@@ -1094,14 +1094,14 @@ if (habitFromNFC && HABITS.find(h => h.id === habitFromNFC)) {
 // Start app normally
 init();
 
-// 🔥 AUTO LOGIC (NO BUTTON CLICK REQUIRED)
+// AUTO LOGIC (NO BUTTON CLICK REQUIRED)
 if (habitFromNFC) {
   setTimeout(() => {
 
     const now = Date.now();
     const lastLog = logs[0];
 
-    // ✅ Prevent duplicate logs within 30 seconds
+    
     if (!lastLog || lastLog.habitId !== selId || (now - lastLog.ts > 30000)) {
       doLog();  // automatic logging
     }
