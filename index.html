@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dialy — Physical Habit Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Reset & Base ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --p1: #7F77DD;
+      --p2: #EEEDFE;
+      --p3: #3C3489;
+      --t1: #1D9E75;
+      --t2: #E1F5EE;
+      --t3: #085041;
+      --c1: #D85A30;
+      --c2: #FAECE7;
+      --c3: #712B13;
+      --a1: #BA7517;
+      --a2: #FAEEDA;
+      --a3: #633806;
+      --pk1: #D4537E;
+      --pk2: #FBEAF0;
+      --pk3: #72243E;
+      --b1: #378ADD;
+      --b2: #E6F1FB;
+      --b3: #0C447C;
+      --surface: #f5f4fc;
+      --bg: #ffffff;
+      --border: rgba(0,0,0,0.09);
+      --text: #1a1a2e;
+      --muted: #6b6b8a;
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 22px;
+      --radius-xl: 28px;
+    }
+
+    html { height: 100%; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--surface);
+      color: var(--text);
+      min-height: 100%;
+      display: flex;
+      justify-content: center;
+      padding-bottom: 2rem;
+    }
+
+    /* ─── Shell ─────────────────────────────────────────────────────────── */
+    .shell {
+      width: 100%;
+      max-width: 480px;
+      background: var(--bg);
+      min-height: 100vh;
+      box-shadow: 0 0 0 1px var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── Top Bar ────────────────────────────────────────────────────────── */
+    .topbar {
+      background: var(--p1);
+      padding: 20px 20px 28px;
+      border-radius: 0 0 32px 32px;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .topbar::before {
+      content: '';
+      position: absolute; top: -40px; right: -40px;
+      width: 140px; height: 140px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+    }
+    .topbar::after {
+      content: '';
+      position: absolute; bottom: -25px; left: 50px;
+      width: 90px; height: 90px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+    }
+    .logo-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      position: relative; z-index: 1;
+    }
+    .logo {
+      font-family: 'Fredoka One', cursive;
+      font-size: 30px;
+      color: #fff;
+      letter-spacing: 1px;
+    }
+    .date-pill {
+      background: rgba(255,255,255,0.22);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 14px;
+      border-radius: 20px;
+    }
+    .nfc-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 16px;
+      position: relative; z-index: 1;
+    }
+    .nfc-ring {
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      border: 2.5px solid rgba(255,255,255,0.65);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .nfc-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #fff;
+      animation: blink 1.4s infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.25; }
+    }
+    .nfc-label {
+      color: rgba(255,255,255,0.88);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .stat-chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      position: relative; z-index: 1;
+    }
+    .chip {
+      background: rgba(255,255,255,0.18);
+      border-radius: 16px;
+      padding: 7px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .chip-num {
+      font-family: 'Fredoka One', cursive;
+      font-size: 22px;
+      color: #fff;
+      line-height: 1;
+    }
+    .chip-lbl {
+      font-size: 10px;
+      color: rgba(255,255,255,0.72);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* ─── Nav ────────────────────────────────────────────────────────────── */
+    .nav {
+      display: flex;
+      gap: 8px;
+      padding: 16px 16px 0;
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      flex: 1;
+      padding: 10px 4px 9px;
+      border-radius: var(--radius-md);
+      border: none;
+      font-family: 'Nunito', sans-serif;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.18s;
+      background: var(--surface);
+      color: var(--muted);
+    }
+    .nav-btn.on {
+      background: var(--p1);
+      color: #fff;
+      transform: translateY(-2px);
+    }
+    .nav-btn .nav-icon {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 3px;
+    }
+
+    /* ─── Views ──────────────────────────────────────────────────────────── */
+    .view { display: none; padding: 14px 16px; flex: 1; animation: fadeUp 0.25s ease; }
+    .view.on { display: block; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── Section Labels ─────────────────────────────────────────────────── */
+    .sec-title {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    /* ─── Habit Pills ─────────────────────────────────────────────────────── */
+    .habit-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+    .hpill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 22px;
+      border: 2.5px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-weight: 800;
+      font-size: 13px;
+    }
+    .hpill .pill-icon { font-size: 16px; }
+    .hpill.sel {
+      border-color: currentColor;
+      transform: scale(1.06);
+    }
+
+    /* ─── Dial ────────────────────────────────────────────────────────────── */
+    .dial-area {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+    .dial-outer {
+      width: 220px; height: 220px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .dial-center {
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 3px solid #fff;
+      transition: background 0.3s;
+      position: relative; z-index: 2;
+      box-shadow: 0 0 0 4px rgba(0,0,0,0.06);
+    }
+    .dial-center-icon { font-size: 34px; line-height: 1; }
+    .dial-center-lbl  { font-size: 10px; font-weight: 800; margin-top: 5px; letter-spacing: 0.04em; }
+    .dial-seg {
+      position: absolute;
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.18s;
+      border: 2.5px solid transparent;
+      font-size: 16px;
+    }
+    .dial-seg:hover, .dial-seg.sel {
+      transform: scale(1.2);
+      border-color: #fff;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.18);
+    }
+    .dial-tick {
+      font-size: 8px;
+      font-weight: 800;
+      margin-top: 1px;
+      color: #fff;
+      letter-spacing: 0.03em;
+      text-align: center;
+    }
+
+    /* ─── Form Cards ─────────────────────────────────────────────────────── */
+    .form-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    .field-label {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 9px;
+    }
+    .dur-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .dur-row input[type="number"] {
+      width: 84px;
+      text-align: center;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 16px;
+      padding: 8px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      outline: none;
+      background: var(--surface);
+      color: var(--text);
+    }
+    .dur-row input[type="number"]:focus { border-color: var(--p1); }
+    .dur-unit { font-size: 14px; font-weight: 700; color: var(--muted); }
+
+    .mood-row { display: flex; gap: 7px; }
+    .mood-opt {
+      flex: 1;
+      border-radius: var(--radius-md);
+      border: 2.5px solid var(--border);
+      background: var(--surface);
+      padding: 9px 2px;
+      cursor: pointer;
+      text-align: center;
+      font-size: 22px;
+      transition: all 0.15s;
+    }
+    .mood-opt.sel {
+      border-color: var(--p1);
+      background: var(--p2);
+      transform: scale(1.12);
+    }
+
+    textarea {
+      width: 100%;
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      resize: none;
+      height: 64px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border);
+      padding: 10px 12px;
+      outline: none;
+      background: var(--surface);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    textarea:focus { border-color: var(--p1); }
+
+    select {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+      cursor: pointer;
+    }
+    select:focus { border-color: var(--p1); }
+
+    /* ─── Log Button ─────────────────────────────────────────────────────── */
+    .log-btn {
+      width: 100%;
+      padding: 16px;
+      border-radius: var(--radius-xl);
+      border: none;
+      background: var(--p1);
+      color: #fff;
+      font-family: 'Fredoka One', cursive;
+      font-size: 19px;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: all 0.18s;
+      margin-top: 4px;
+    }
+    .log-btn:hover   { background: var(--p3); transform: translateY(-2px); }
+    .log-btn:active  { transform: scale(0.97); }
+    .log-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    /* ─── History ────────────────────────────────────────────────────────── */
+    .hist-day {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin: 16px 0 8px;
+    }
+    .hist-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 13px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+      animation: fadeUp 0.22s ease;
+    }
+    .hist-dot {
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+    .hist-info   { flex: 1; min-width: 0; }
+    .hist-name   { font-size: 14px; font-weight: 800; }
+    .hist-meta   { font-size: 11px; font-weight: 600; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .hist-time   { font-size: 11px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+    .hist-actions { display: flex; gap: 5px; align-items: center; }
+
+    .icon-btn {
+      width: 32px; height: 32px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+      transition: all 0.15s;
+    }
+    .icon-btn:hover { border-color: #aaa; background: #eee; }
+    .icon-btn.del:hover { background: #fde8e8; border-color: #e24b4a; }
+
+    /* ─── Empty State ─────────────────────────────────────────────────────── */
+    .empty-state {
+      text-align: center;
+      padding: 3.5rem 1rem;
+      color: var(--muted);
+    }
+    .empty-icon  { font-size: 52px; margin-bottom: 14px; }
+    .empty-title { font-size: 17px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+    .empty-sub   { font-size: 13px; font-weight: 600; }
+
+    /* ─── Streaks ─────────────────────────────────────────────────────────── */
+    .streak-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 10px;
+      margin-bottom: 1.4rem;
+    }
+    .streak-card {
+      border-radius: var(--radius-lg);
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 1px solid var(--border);
+    }
+    .streak-icon { font-size: 28px; margin-bottom: 7px; }
+    .streak-name { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+    .streak-val  { font-family: 'Fredoka One', cursive; font-size: 26px; line-height: 1; }
+    .streak-sub  { font-size: 10px; font-weight: 700; opacity: 0.7; margin-top: 3px; }
+
+    /* ─── Week Bar Chart ─────────────────────────────────────────────────── */
+    .week-chart  { margin-bottom: 1.4rem; }
+    .bar-row     { display: flex; align-items: flex-end; justify-content: space-between; gap: 5px; height: 90px; margin-bottom: 5px; }
+    .bar-col     { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
+    .bar         { width: 100%; border-radius: 8px 8px 0 0; transition: height 0.45s cubic-bezier(0.34,1.56,0.64,1); min-height: 4px; }
+    .bar-day     { font-size: 10px; font-weight: 800; color: var(--muted); margin-top: 5px; text-transform: uppercase; }
+    .bar-num     { font-size: 11px; font-weight: 800; color: var(--muted); margin-bottom: 3px; }
+
+    /* ─── Toast ───────────────────────────────────────────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--p1);
+      color: #fff;
+      border-radius: var(--radius-lg);
+      padding: 13px 24px;
+      font-size: 14px;
+      font-weight: 800;
+      text-align: center;
+      pointer-events: none;
+      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+      opacity: 0;
+      z-index: 999;
+      white-space: nowrap;
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* ─── Edit Modal ─────────────────────────────────────────────────────── */
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-bg.open { display: flex; }
+    .modal-box {
+      background: var(--bg);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      animation: fadeUp 0.25s ease;
+    }
+    .modal-title { font-size: 18px; font-weight: 800; color: var(--text); margin-bottom: 16px; }
+    .modal-field { margin-bottom: 14px; }
+    .modal-field label { display: block; font-size: 12px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+    .modal-field input[type="number"],
+    .modal-field select,
+    .modal-field textarea { width: 100%; }
+    .edit-btns { display: flex; gap: 8px; margin-top: 16px; }
+    .edit-save {
+      flex: 1;
+      padding: 12px;
+      border-radius: var(--radius-md);
+      border: none;
+      background: var(--p1);
+      color: #fff;
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .edit-save:hover { background: var(--p3); }
+    .edit-cancel {
+      padding: 12px 18px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--text);
+      transition: background 0.15s;
+    }
+    .edit-cancel:hover { background: #eee; }
+
+    /* ─── Confirm Delete Modal ────────────────────────────────────────────── */
+    .confirm-box { text-align: center; }
+    .confirm-icon  { font-size: 40px; margin-bottom: 10px; }
+    .confirm-title { font-size: 17px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+    .confirm-sub   { font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 18px; }
+    .confirm-btns  { display: flex; gap: 8px; }
+    .confirm-del {
+      flex: 1;
+      padding: 12px;
+      border-radius: var(--radius-md);
+      border: none;
+      background: #E24B4A;
+      color: #fff;
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .confirm-del:hover { background: #c33; }
+
+    /* ─── Responsive ─────────────────────────────────────────────────────── */
+    @media (max-width: 480px) {
+      .shell { max-width: 100%; box-shadow: none; }
+      .topbar { border-radius: 0 0 26px 26px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="logo-row">
+      <div class="logo">Dialy ✦</div>
+      <div class="date-pill" id="datePill"></div>
+    </div>
+    <div class="nfc-row">
+      <div class="nfc-ring"><div class="nfc-dot"></div></div>
+      <div class="nfc-label">NFC ready — place phone to trigger</div>
+    </div>
+    <div class="stat-chips">
+      <div class="chip">
+        <span class="chip-num" id="topTotal">0</span>
+        <span class="chip-lbl">Today</span>
+      </div>
+      <div class="chip">
+        <span class="chip-num" id="topMins">0</span>
+        <span class="chip-lbl">Minutes</span>
+      </div>
+      <div class="chip">
+        <span class="chip-num" id="topStreak">0</span>
+        <span class="chip-lbl">Streak</span>
+      </div>
+      <div class="chip">
+        <span class="chip-num" id="topWeek">0</span>
+        <span class="chip-lbl">This week</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav">
+    <button class="nav-btn on" onclick="gotoView('log', this)">
+      <span class="nav-icon">🎯</span>Log
+    </button>
+    <button class="nav-btn" onclick="gotoView('history', this)">
+      <span class="nav-icon">📋</span>History
+    </button>
+    <button class="nav-btn" onclick="gotoView('streaks', this)">
+      <span class="nav-icon">🔥</span>Streaks
+    </button>
+  </div>
+
+  <!-- Log View -->
+  <div id="view-log" class="view on">
+
+    <div class="sec-title" style="margin-top:12px">Pick your habit</div>
+    <div class="habit-pills" id="habitPills"></div>
+
+    <div class="sec-title">Or spin the dial</div>
+    <div class="dial-area">
+      <div class="dial-outer" id="dialOuter">
+        <div class="dial-center" id="dialCenter">
+          <span class="dial-center-icon" id="dialIcon"></span>
+          <span class="dial-center-lbl"  id="dialLbl"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="field-label">Duration</div>
+      <div class="dur-row">
+        <input type="number" id="durInput" value="30" min="1" max="300" />
+        <span class="dur-unit">minutes</span>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="field-label">How was it?</div>
+      <div class="mood-row" id="moodRow">
+        <div class="mood-opt"     onclick="pickMood(this,'😩')" data-m="😩">😩</div>
+        <div class="mood-opt"     onclick="pickMood(this,'😐')" data-m="😐">😐</div>
+        <div class="mood-opt sel" onclick="pickMood(this,'🙂')" data-m="🙂">🙂</div>
+        <div class="mood-opt"     onclick="pickMood(this,'😄')" data-m="😄">😄</div>
+        <div class="mood-opt"     onclick="pickMood(this,'🔥')" data-m="🔥">🔥</div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="field-label">Notes</div>
+      <textarea id="notesInput" placeholder="Anything to remember from this session…"></textarea>
+    </div>
+
+    <button class="log-btn" id="logBtn" onclick="doLog()">✦ Log this habit</button>
+  </div>
+
+  <!-- History View -->
+  <div id="view-history" class="view">
+    <div id="histBody" style="margin-top:8px"></div>
+  </div>
+
+  <!-- Streaks View -->
+  <div id="view-streaks" class="view">
+    <div class="sec-title" style="margin-top:8px">Weekly activity</div>
+    <div class="week-chart">
+      <div class="bar-row" id="barRow"></div>
+    </div>
+    <div class="sec-title">Habit streaks</div>
+    <div class="streak-grid" id="streakGrid"></div>
+  </div>
+
+</div><!-- /.shell -->
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Edit Modal -->
+<div class="modal-bg" id="editModal">
+  <div class="modal-box">
+    <div class="modal-title">✏️ Edit log</div>
+    <div class="modal-field">
+      <label>Habit</label>
+      <select id="editHabit"></select>
+    </div>
+    <div class="modal-field">
+      <label>Duration (minutes)</label>
+      <input type="number" id="editDur" min="1" max="300" />
+    </div>
+    <div class="modal-field">
+      <label>Notes</label>
+      <textarea id="editNotes" style="height:54px"></textarea>
+    </div>
+    <div class="edit-btns">
+      <button class="edit-cancel" onclick="closeEdit()">Cancel</button>
+      <button class="edit-save"   onclick="saveEdit()">Save changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Delete Modal -->
+<div class="modal-bg" id="confirmModal">
+  <div class="modal-box confirm-box">
+    <div class="confirm-icon">🗑️</div>
+    <div class="confirm-title">Delete this log?</div>
+    <div class="confirm-sub">This action cannot be undone.</div>
+    <div class="confirm-btns">
+      <button class="edit-cancel" onclick="closeConfirm()">Cancel</button>
+      <button class="confirm-del" onclick="confirmDelete()">Yes, delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ───────────────────────────────────────────────────────────────────────────
+   DATA
+─────────────────────────────────────────────────────────────────────────── */
+const HABITS = [
+  { id:'study',    name:'Study',     icon:'📚', bg:'#EEEDFE', fg:'#3C3489', dot:'#7F77DD' },
+  { id:'workout',  name:'Workout',   icon:'💪', bg:'#FAECE7', fg:'#712B13', dot:'#D85A30' },
+  { id:'read',     name:'Reading',   icon:'📖', bg:'#E6F1FB', fg:'#0C447C', dot:'#378ADD' },
+  { id:'meditate', name:'Meditate',  icon:'🧘', bg:'#FBEAF0', fg:'#72243E', dot:'#D4537E' },
+  { id:'water',    name:'Hydration', icon:'💧', bg:'#E1F5EE', fg:'#085041', dot:'#1D9E75' },
+  { id:'sleep',    name:'Sleep',     icon:'🌙', bg:'#FAEEDA', fg:'#633806', dot:'#BA7517' },
+];
+
+const BAR_COLORS = ['#7F77DD','#D85A30','#378ADD','#D4537E','#1D9E75','#BA7517','#639922'];
+const STORAGE_KEY = 'dialy_logs_v3';
+
+let logs    = [];
+let selId   = HABITS[0].id;
+let mood    = '🙂';
+let editId  = null;
+let delId   = null;
+
+/* ───────────────────────────────────────────────────────────────────────────
+   STORAGE  (localStorage as fallback)
+─────────────────────────────────────────────────────────────────────────── */
+function saveData() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(logs)); } catch(e) {}
+}
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) logs = JSON.parse(raw);
+  } catch(e) { logs = []; }
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   HELPERS
+─────────────────────────────────────────────────────────────────────────── */
+function getHabit(id) { return HABITS.find(h => h.id === id) || HABITS[0]; }
+
+function todayStr() { return new Date().toISOString().slice(0,10); }
+
+function calcStreak() {
+  const days = [...new Set(logs.map(l => l.date))].sort().reverse();
+  if (!days.length) return 0;
+  let streak = 0;
+  const now = new Date();
+  for (let i = 0; i < days.length; i++) {
+    const diff = Math.round((now - new Date(days[i] + 'T00:00:00')) / 86400000);
+    if (diff === i || diff === i + 1) streak++;
+    else break;
+  }
+  return streak;
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   INIT
+─────────────────────────────────────────────────────────────────────────── */
+function init() {
+  const now = new Date();
+  document.getElementById('datePill').textContent =
+    now.toLocaleDateString('en-IN', { weekday:'short', day:'numeric', month:'short' });
+  loadData();
+  buildPills();
+  buildDial();
+  render();
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   PILL & DIAL BUILDERS
+─────────────────────────────────────────────────────────────────────────── */
+function buildPills() {
+  const c = document.getElementById('habitPills');
+  c.innerHTML = '';
+  HABITS.forEach(h => {
+    const d = document.createElement('div');
+    d.className = 'hpill' + (h.id === selId ? ' sel' : '');
+    d.style.background = h.bg;
+    d.style.color = h.fg;
+    d.innerHTML = `<span class="pill-icon">${h.icon}</span>${h.name}`;
+    d.onclick = () => pickHabit(h.id);
+    c.appendChild(d);
+  });
+}
+
+function buildDial() {
+  const outer = document.getElementById('dialOuter');
+  outer.querySelectorAll('.dial-seg').forEach(e => e.remove());
+  const h = getHabit(selId);
+  const dc = document.getElementById('dialCenter');
+  dc.style.background = h.bg;
+  document.getElementById('dialIcon').textContent = h.icon;
+  const lbl = document.getElementById('dialLbl');
+  lbl.textContent = h.name;
+  lbl.style.color = h.fg;
+
+  const cx = 110, cy = 110, r = 78;
+  HABITS.forEach((hb, i) => {
+    const angle = (i / HABITS.length) * 2 * Math.PI - Math.PI / 2;
+    const x = cx + r * Math.cos(angle);
+    const y = cy + r * Math.sin(angle);
+    const seg = document.createElement('div');
+    seg.className = 'dial-seg' + (hb.id === selId ? ' sel' : '');
+    seg.style.cssText = `left:${x-24}px;top:${y-24}px;background:${hb.dot}`;
+    seg.innerHTML = `<span style="font-size:16px">${hb.icon}</span><span class="dial-tick">${hb.name.slice(0,3)}</span>`;
+    seg.onclick = () => pickHabit(hb.id);
+    outer.appendChild(seg);
+  });
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   INTERACTION HANDLERS
+─────────────────────────────────────────────────────────────────────────── */
+function pickHabit(id) {
+  selId = id;
+  buildPills();
+  buildDial();
+}
+
+function pickMood(el, m) {
+  mood = m;
+  document.querySelectorAll('.mood-opt').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function gotoView(name, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('on'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('on'));
+  document.getElementById('view-' + name).classList.add('on');
+  btn.classList.add('on');
+  if (name === 'history') renderHistory();
+  if (name === 'streaks') renderStreaks();
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   LOGGING
+─────────────────────────────────────────────────────────────────────────── */
+function doLog() {
+  const dur   = parseInt(document.getElementById('durInput').value) || 30;
+  const notes = document.getElementById('notesInput').value.trim();
+  const now   = new Date();
+  logs.unshift({
+    id:      Date.now(),
+    habitId: selId,
+    dur,
+    mood,
+    notes,
+    date: todayStr(),
+    time: now.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' }),
+    ts:   now.getTime(),
+  });
+  document.getElementById('notesInput').value = '';
+  saveData();
+  render();
+  toast(`${getHabit(selId).icon} ${getHabit(selId).name} logged!`);
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   EDIT
+─────────────────────────────────────────────────────────────────────────── */
+function openEdit(id) {
+  editId = id;
+  const l = logs.find(x => x.id === id);
+  if (!l) return;
+  const sel = document.getElementById('editHabit');
+  sel.innerHTML = HABITS.map(h =>
+    `<option value="${h.id}"${h.id === l.habitId ? ' selected' : ''}>${h.icon} ${h.name}</option>`
+  ).join('');
+  document.getElementById('editDur').value   = l.dur;
+  document.getElementById('editNotes').value = l.notes || '';
+  document.getElementById('editModal').classList.add('open');
+}
+
+function closeEdit() {
+  document.getElementById('editModal').classList.remove('open');
+  editId = null;
+}
+
+function saveEdit() {
+  const l = logs.find(x => x.id === editId);
+  if (!l) { closeEdit(); return; }
+  l.habitId = document.getElementById('editHabit').value;
+  l.dur     = parseInt(document.getElementById('editDur').value) || l.dur;
+  l.notes   = document.getElementById('editNotes').value.trim();
+  saveData();
+  render();
+  closeEdit();
+  toast('Log updated ✓');
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   DELETE
+─────────────────────────────────────────────────────────────────────────── */
+function askDelete(id) {
+  delId = id;
+  document.getElementById('confirmModal').classList.add('open');
+}
+
+function closeConfirm() {
+  document.getElementById('confirmModal').classList.remove('open');
+  delId = null;
+}
+
+function confirmDelete() {
+  logs = logs.filter(l => l.id !== delId);
+  saveData();
+  render();
+  closeConfirm();
+  toast('Log deleted');
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   RENDER
+─────────────────────────────────────────────────────────────────────────── */
+function render() {
+  updateTopStats();
+  renderHistory();
+  renderStreaks();
+}
+
+function updateTopStats() {
+  const today = todayStr();
+  const td    = logs.filter(l => l.date === today);
+  document.getElementById('topTotal').textContent  = td.length;
+  document.getElementById('topMins').textContent   = td.reduce((a, l) => a + l.dur, 0);
+  document.getElementById('topStreak').textContent = calcStreak();
+  const weekAgo = new Date();
+  weekAgo.setDate(weekAgo.getDate() - 6);
+  document.getElementById('topWeek').textContent   =
+    logs.filter(l => new Date(l.date + 'T00:00:00') >= weekAgo).length;
+}
+
+function renderHistory() {
+  const body = document.getElementById('histBody');
+  if (!logs.length) {
+    body.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <div class="empty-title">Nothing logged yet</div>
+        <div class="empty-sub">Head to the Log tab and start your first habit!</div>
+      </div>`;
+    return;
+  }
+  const grouped = {};
+  logs.forEach(l => { (grouped[l.date] = grouped[l.date] || []).push(l); });
+  const dates = Object.keys(grouped).sort().reverse();
+  body.innerHTML = '';
+  dates.forEach(date => {
+    const lbl = document.createElement('div');
+    lbl.className = 'hist-day';
+    lbl.textContent = new Date(date + 'T00:00:00')
+      .toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long' });
+    body.appendChild(lbl);
+    grouped[date].forEach(l => {
+      const h  = getHabit(l.habitId);
+      const el = document.createElement('div');
+      el.className = 'hist-item';
+      el.innerHTML = `
+        <div class="hist-dot" style="background:${h.bg}">${h.icon}</div>
+        <div class="hist-info">
+          <div class="hist-name" style="color:${h.fg}">${h.name}</div>
+          <div class="hist-meta">${l.dur} min · ${l.mood}${l.notes ? ' · ' + l.notes.slice(0,40) + (l.notes.length > 40 ? '…' : '') : ''}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+          <div class="hist-time">${l.time}</div>
+          <div class="hist-actions">
+            <div class="icon-btn"     onclick="openEdit(${l.id})"  title="Edit">✏️</div>
+            <div class="icon-btn del" onclick="askDelete(${l.id})" title="Delete">🗑️</div>
+          </div>
+        </div>`;
+      body.appendChild(el);
+    });
+  });
+}
+
+function renderStreaks() {
+  /* Bar chart */
+  const br   = document.getElementById('barRow');
+  br.innerHTML = '';
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    days.push(d);
+  }
+  const counts = days.map(d => {
+    const s = d.toISOString().slice(0, 10);
+    return logs.filter(l => l.date === s).length;
+  });
+  const mx = Math.max(...counts, 1);
+  days.forEach((d, i) => {
+    const pct = Math.round((counts[i] / mx) * 75);
+    const col = document.createElement('div');
+    col.className = 'bar-col';
+    col.innerHTML = `
+      ${counts[i] > 0 ? `<div class="bar-num">${counts[i]}</div>` : ''}
+      <div class="bar" style="height:${Math.max(pct,4)}px;background:${BAR_COLORS[i % BAR_COLORS.length]}"></div>
+      <div class="bar-day">${d.toLocaleDateString('en-IN',{weekday:'short'}).slice(0,2)}</div>`;
+    br.appendChild(col);
+  });
+
+  /* Streak cards */
+  const grid = document.getElementById('streakGrid');
+  grid.innerHTML = '';
+  HABITS.forEach(h => {
+    const hl     = logs.filter(l => l.habitId === h.id);
+    const days_  = [...new Set(hl.map(l => l.date))];
+    const total  = hl.reduce((a, l) => a + l.dur, 0);
+    const card   = document.createElement('div');
+    card.className = 'streak-card';
+    card.style.background = h.bg;
+    card.innerHTML = `
+      <div class="streak-icon">${h.icon}</div>
+      <div class="streak-name" style="color:${h.fg}">${h.name}</div>
+      <div class="streak-val"  style="color:${h.fg}">${days_.length}</div>
+      <div class="streak-sub"  style="color:${h.fg}">days · ${total} min</div>`;
+    grid.appendChild(card);
+  });
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   TOAST
+─────────────────────────────────────────────────────────────────────────── */
+let toastTimer;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   BOOT
+─────────────────────────────────────────────────────────────────────────── */
+init();
+</script>
+</body>
+</html>

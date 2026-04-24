@@ -1,0 +1,8 @@
+{
+  "name": "Dialy Habit Tracker",
+  "short_name": "Dialy",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#7F77DD"
+}
