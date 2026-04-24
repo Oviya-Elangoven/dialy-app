@@ -1078,7 +1078,36 @@ function toast(msg) {
 /* ───────────────────────────────────────────────────────────────────────────
    BOOT
 ─────────────────────────────────────────────────────────────────────────── */
+/* ───────────────────────────────────────────────────────────────────────────
+   NFC AUTO DETECTION + AUTO LOGGING
+─────────────────────────────────────────────────────────────────────────── */
+
+// Get habit from NFC URL
+const params = new URLSearchParams(window.location.search);
+const habitFromNFC = params.get("habit");
+
+// If NFC opened the app → set habit
+if (habitFromNFC && HABITS.find(h => h.id === habitFromNFC)) {
+  selId = habitFromNFC;
+}
+
+// Start app normally
 init();
+
+// 🔥 AUTO LOGIC (NO BUTTON CLICK REQUIRED)
+if (habitFromNFC) {
+  setTimeout(() => {
+
+    const now = Date.now();
+    const lastLog = logs[0];
+
+    // ✅ Prevent duplicate logs within 30 seconds
+    if (!lastLog || lastLog.habitId !== selId || (now - lastLog.ts > 30000)) {
+      doLog();  // automatic logging
+    }
+
+  }, 800); // delay ensures UI is ready
+}
 </script>
 </body>
 </html>
